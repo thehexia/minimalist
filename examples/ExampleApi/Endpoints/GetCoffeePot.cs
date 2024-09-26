@@ -14,19 +14,21 @@ internal class GetCoffeePot : IEndpointGroup
 
     public void Map(IEndpointRouteBuilder app) => app
         .MapGet("/api/coffeepot", ([FromBody] GetCoffeePotRequest request, IMyService myService) =>
-            {
-                if (request.CoffeePot == 418) throw new PingException("");
-                if (request.CoffeePot == 419) throw new PathTooLongException();
+        {
+            if (request.CoffeePot == 418) throw new PingException("");
+            if (request.CoffeePot == 419) throw new PathTooLongException();
 
-                myService.DoThings();
+            myService.DoThings();
 
-                return Results.Ok<GetCoffeePotDto>(new("I'm a coffee pot."));
-            })
+            return Results.Ok<GetCoffeePotDto>(new("I'm a coffee pot."));
+        })
         .AddValidator<GetCoffeePotRequest, CoffeePotValidator>()
-        .AddExceptionHandler<PingException>((ex) => {
+        .AddExceptionHandler<PingException>((ex) => 
+        {
             return Results.Problem("I'm a teapot.", statusCode: 418);
         })
-        .AddExceptionHandler<PathTooLongException>((ex) => {
+        .AddExceptionHandler<PathTooLongException>((ex) => 
+        {
             return Results.Problem("I'm stupid.", statusCode: 500);
         });
 
