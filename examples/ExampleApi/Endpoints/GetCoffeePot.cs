@@ -1,5 +1,6 @@
 using System;
 using System.Net.NetworkInformation;
+using ExampleApi.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using MinimalistDotNet;
@@ -12,22 +13,22 @@ internal class GetCoffeePot : IEndpointGroup
     internal record class GetCoffeePotDto(string message);
 
     public void Map(IEndpointRouteBuilder app) => app
-            .MapGet("/api/coffeepot", Handle)
-            .AddValidator<GetCoffeePotRequest, CoffeePotValidator>()
-            .AddExceptionHandler<PingException>((ex) => {
-                return Results.Problem("I'm a teapot.", statusCode: 418);
+        .MapGet("/api/coffeepot", ([FromBody] GetCoffeePotRequest request, IMyService myService) =>
+            {
+                if (request.CoffeePot == 418) throw new PingException("");
+                if (request.CoffeePot == 419) throw new PathTooLongException();
+
+                myService.DoThings();
+
+                return Results.Ok<GetCoffeePotDto>(new("I'm a coffee pot."));
             })
-            .AddExceptionHandler<PathTooLongException>((ex) => {
-                return Results.Problem("I'm stupid.", statusCode: 500);
-            });
-
-    internal async Task<IResult> Handle([FromBody] GetCoffeePotRequest request)
-    {
-        if (request.CoffeePot == 418) throw new PingException("");
-        if (request.CoffeePot == 419) throw new PathTooLongException();
-
-        return Results.Ok<GetCoffeePotDto>(new("I'm a coffee pot."));
-    }
+        .AddValidator<GetCoffeePotRequest, CoffeePotValidator>()
+        .AddExceptionHandler<PingException>((ex) => {
+            return Results.Problem("I'm a teapot.", statusCode: 418);
+        })
+        .AddExceptionHandler<PathTooLongException>((ex) => {
+            return Results.Problem("I'm stupid.", statusCode: 500);
+        });
 
     internal class CoffeePotValidator : AbstractValidator<GetCoffeePotRequest>
     {
