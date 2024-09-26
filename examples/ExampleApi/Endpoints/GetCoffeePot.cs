@@ -12,8 +12,8 @@ internal class GetCoffeePot : IEndpointGroup
     internal record class GetCoffeePotRequest(int CoffeePot);
     internal record class GetCoffeePotDto(string message);
 
-    public void Map(IEndpointRouteBuilder app) => app
-        .MapGet("/api/coffeepot", ([FromBody] GetCoffeePotRequest request, IMyService myService) =>
+    public Mapper Map => app => 
+        app.MapGet("/api/coffeepot", ([FromBody] GetCoffeePotRequest request, IMyService myService) =>
         {
             if (request.CoffeePot == 418) throw new PingException("");
             if (request.CoffeePot == 419) throw new PathTooLongException();
