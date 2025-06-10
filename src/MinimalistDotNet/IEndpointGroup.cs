@@ -2,9 +2,7 @@
 
 namespace MinimalistDotNet;
 
-public delegate void Mapper(IEndpointRouteBuilder app);
-
 public interface IEndpointGroup
 {
-    Mapper Map { get; }
+    public void Map(IEndpointRouteBuilder app);
 }

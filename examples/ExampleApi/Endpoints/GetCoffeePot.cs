@@ -12,7 +12,8 @@ internal class GetCoffeePot : IEndpointGroup
     internal record class GetCoffeePotRequest(int CoffeePot);
     internal record class GetCoffeePotDto(string message);
 
-    public Mapper Map => app => 
+    public void Map(IEndpointRouteBuilder app)
+    {
         app.MapGet("/api/coffeepot", ([FromBody] GetCoffeePotRequest request, IMyService myService) =>
         {
             if (request.CoffeePot == 418) throw new PingException("");
@@ -31,6 +32,7 @@ internal class GetCoffeePot : IEndpointGroup
         {
             return Results.Problem("I'm stupid.", statusCode: 500);
         });
+    }
 
     internal class CoffeePotValidator : AbstractValidator<GetCoffeePotRequest>
     {
