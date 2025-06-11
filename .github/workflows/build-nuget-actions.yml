@@ -20,4 +20,6 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
+      - name: Publish
+        run: dotnet nuget add source --username thehexia --password GITHUB_TOKEN --name github "https://nuget.pkg.github.com/thehexia/index.json"
         
