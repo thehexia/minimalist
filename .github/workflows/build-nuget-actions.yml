@@ -7,6 +7,9 @@ jobs:
     strategy:
       matrix:
         dotnet-version: [ '8.0.x' ]
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      packages: write # for pushing GitHub Nuget packages
 
     steps:
       - uses: actions/checkout@v4
