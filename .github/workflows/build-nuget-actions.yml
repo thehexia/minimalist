@@ -14,7 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0 # usually necessary for gitversion
+
+      # Gitversion steps
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v3.2.1
         with:
@@ -27,18 +29,21 @@ jobs:
       - name: Display Version
         run: echo ${{ steps.version_step.outputs.fullSemVer }}
 
+      # Setup dotnet
       - name: Setup dotnet ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Display dotnet version
         run: dotnet --version
+
+      # build and publish
       - name: Install dependencies
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
       - name: Pack
-        run: dotnet pack --configuration Release
+        run: dotnet pack --configuration Release -p:PackageVersion=${{ steps.version_step.outputs.fullSemVer }}
       - name: Configure nuget source
         run: dotnet nuget add source --username thehexia --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/thehexia/index.json"
       - name: Deploy the package
